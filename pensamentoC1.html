@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio Matemático - Pensamento Computacional</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .question {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .options {
+            display: flex;
+            gap: 10px;
+        }
+        .option-button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #2196f3;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .option-button:hover {
+            background-color: #1e88e5;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Desafio Matemático - Pensamento Computacional</h1>
+    <div class="game-container">
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <audio id="correct-sound" src="sounds/math.mp3"></audio>
+    <audio id="wrong-sound" src="sounds/errou.mp3"></audio>
+    <audio id="next-sound" src="sounds/acoustic-guitar-loop-f-91bpm-132687.mp3"></audio>
+
+    <script>
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const resultElement = document.getElementById('result');
+        const correctSound = document.getElementById('correct-sound');
+        const wrongSound = document.getElementById('wrong-sound');
+        const nextSound = document.getElementById('next-sound');
+
+        let currentAnswer = 0;
+
+        function generateQuestion() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            currentAnswer = num1 * num2;
+            questionElement.textContent = `Se você tem ${num1} grupos de ${num2} objetos, quantos objetos você tem no total?`;
+
+            const options = [currentAnswer, currentAnswer + 1, currentAnswer - 1, currentAnswer + 2];
+            options.sort(() => Math.random() - 0.5);
+
+            optionsElement.innerHTML = '';
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button');
+                button.onclick = () => checkAnswer(option);
+                optionsElement.appendChild(button);
+            });
+
+            resultElement.textContent = '';
+        }
+
+        function checkAnswer(selectedOption) {
+            if (selectedOption === currentAnswer) {
+                resultElement.textContent = 'Parabéns! Você utilizou o pensamento computacional e acertou!';
+                resultElement.style.color = 'green';
+                correctSound.play();
+            } else {
+                resultElement.textContent = 'Ops! Reflita e tente novamente.';
+                resultElement.style.color = 'red';
+                wrongSound.play();
+            }
+            setTimeout(() => {
+                nextSound.play();
+                generateQuestion();
+            }, 2000);
+        }
+
+        generateQuestion();
+    </script>
+</body>
+</html>

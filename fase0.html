@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Memória Binária para Crianças</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .game-board {
+      display: grid;
+      gap: 10px;
+    }
+    .card {
+      width: 100px;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s, background-color 0.3s;
+    }
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+    .card.matched {
+      background-color: #4caf50 !important;
+      color: #ffffff;
+      cursor: default;
+    }
+    .dots {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px;
+      width: 60%;
+      height: 60%;
+    }
+    .dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #ddd;
+    }
+    .dot.active {
+      background-color: #2196f3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Jogo da Memória Binária</h1>
+  <div id="game-board" class="game-board"></div>
+  <audio id="flip-sound" src="sounds/flip.mp3"></audio>
+  <audio id="match-sound" src="sounds/math.mp3"></audio>
+  <audio id="victory-sound" src="sounds/mario.mp3"></audio>
+
+  <script>
+    const flipSound = document.getElementById('flip-sound');
+    const matchSound = document.getElementById('match-sound');
+    const victorySound = document.getElementById('victory-sound');
+    const board = document.getElementById('game-board');
+    let firstCard, secondCard;
+    let lockBoard = false;
+    let matches = 0;
+    let totalPairs = 2; // Número inicial de pares no jogo
+
+    const createBinaryDots = (num) => {
+      const dotsContainer = document.createElement('div');
+      dotsContainer.classList.add('dots');
+      const binaryString = num.toString(2).padStart(4, '0');
+      for (let bit of binaryString) {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (bit === '1') dot.classList.add('active');
+        dotsContainer.appendChild(dot);
+      }
+      return dotsContainer;
+    };
+
+    const createCard = (num) => {
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.dataset.num = num;
+      card.appendChild(createBinaryDots(num));
+      card.addEventListener('click', flipCard);
+      return card;
+    };
+
+    const setupBoard = () => {
+      board.innerHTML = '';
+      matches = 0;
+      const numbers = Array.from({ length: totalPairs }, (_, i) => i + 1);
+      const cards = [...numbers, ...numbers].map(num => createCard(num));
+      cards.sort(() => Math.random() - 0.5);
+      const columns = Math.ceil(Math.sqrt(cards.length));
+      board.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+      cards.forEach(card => board.appendChild(card));
+    };
+
+    const flipCard = (e) => {
+      if (lockBoard) return;
+      const clickedCard = e.currentTarget;
+      if (clickedCard === firstCard || clickedCard.classList.contains('matched')) return;
+
+      clickedCard.classList.add('flipped');
+      flipSound.play();
+
+      if (!firstCard) {
+        firstCard = clickedCard;
+        return;
+      }
+
+      secondCard = clickedCard;
+      checkForMatch();
+    };
+
+    const checkForMatch = () => {
+      const isMatch = firstCard.dataset.num === secondCard.dataset.num;
+
+      if (isMatch) {
+        disableCards();
+        matchSound.play();
+        matches++;
+        if (matches === totalPairs) {
+          setTimeout(() => {
+            victorySound.play();
+            alert('Parabéns! Você completou esta fase!');
+            totalPairs++;
+            setupBoard();
+          }, 1000);
+        }
+      } else {
+        unflipCards();
+      }
+    };
+
+    const disableCards = () => {
+      firstCard.classList.add('matched');
+      secondCard.classList.add('matched');
+      resetBoard();
+    };
+
+    const unflipCards = () => {
+      lockBoard = true;
+      setTimeout(() => {
+        firstCard.classList.remove('flipped');
+        secondCard.classList.remove('flipped');
+        resetBoard();
+      }, 1000);
+    };
+
+    const resetBoard = () => {
+      [firstCard, secondCard] = [null, null];
+      lockBoard = false;
+    };
+
+    setupBoard();
+  </script>
+</body>
+</html>

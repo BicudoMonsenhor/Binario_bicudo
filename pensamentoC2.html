@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Pensamento Computacional</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #1e1e1e;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+            background-color: #2e2e2e;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <audio id="somVitoria" src="sounds/math.mp3" preload="auto"></audio>
+    <audio id="somColisao" src="sounds/errou.mp3" preload="auto"></audio>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const somVitoria = document.getElementById('somVitoria');
+        const somColisao = document.getElementById('somColisao');
+
+        let faseAtual = 0;
+        let jogador = { x: 50, y: 50, size: 30, color: 'white', velocidade: 5 };
+        const metas = [
+            { x: 300, y: 200, size: 30, color: 'yellow' },
+            { x: 500, y: 300, size: 30, color: 'yellow' },
+            { x: 700, y: 400, size: 30, color: 'yellow' }
+        ];
+
+        let obstaculos = [
+            { x: 150, y: 150, width: 100, height: 30, color: 'purple', dx: 2, dy: 0 },
+            { x: 400, y: 250, width: 150, height: 30, color: 'purple', dx: -2, dy: 1 },
+            { x: 600, y: 350, width: 80, height: 30, color: 'purple', dx: 3, dy: -2 },
+            { x: 200, y: 450, width: 100, height: 30, color: 'purple', dx: 2, dy: 2 },
+            { x: 500, y: 100, width: 120, height: 30, color: 'purple', dx: -3, dy: 1 }
+        ];
+
+        let teclas = {};
+
+        window.addEventListener('keydown', (e) => {
+            teclas[e.key] = true;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            teclas[e.key] = false;
+        });
+
+        function resetarJogador() {
+            jogador.x = 50;
+            jogador.y = 50;
+            teclas = {};
+        }
+
+        function desenharJogador() {
+            ctx.fillStyle = jogador.color;
+            ctx.fillRect(jogador.x, jogador.y, jogador.size, jogador.size);
+        }
+
+        function desenharMeta(meta) {
+            ctx.fillStyle = meta.color;
+            ctx.fillRect(meta.x, meta.y, meta.size, meta.size);
+        }
+
+        function desenharObstaculos() {
+            obstaculos.forEach(obstaculo => {
+                ctx.fillStyle = obstaculo.color;
+                ctx.fillRect(obstaculo.x, obstaculo.y, obstaculo.width, obstaculo.height);
+                obstaculo.x += obstaculo.dx;
+                obstaculo.y += obstaculo.dy;
+                if (obstaculo.x < 0 || obstaculo.x + obstaculo.width > canvas.width) {
+                    obstaculo.dx *= -1;
+                }
+                if (obstaculo.y < 0 || obstaculo.y + obstaculo.height > canvas.height) {
+                    obstaculo.dy *= -1;
+                }
+            });
+        }
+
+        function verificarColisao() {
+            const meta = metas[faseAtual % metas.length];
+
+            if (
+                jogador.x < meta.x + meta.size &&
+                jogador.x + jogador.size > meta.x &&
+                jogador.y < meta.y + meta.size &&
+                jogador.y + jogador.size > meta.y
+            ) {
+                somVitoria.play();
+                alert('Você alcançou o objetivo! Próxima fase.');
+                faseAtual++;
+                resetarJogador();
+            }
+
+            obstaculos.forEach(obstaculo => {
+                if (
+                    jogador.x < obstaculo.x + obstaculo.width &&
+                    jogador.x + jogador.size > obstaculo.x &&
+                    jogador.y < obstaculo.y + obstaculo.height &&
+                    jogador.y + jogador.size > obstaculo.y
+                ) {
+                    somColisao.play();
+                    alert('Você colidiu com um obstáculo! Tente novamente.');
+                    resetarJogador();
+                }
+            });
+        }
+
+        function atualizarJogo() {
+            if (teclas['ArrowUp']) jogador.y -= jogador.velocidade;
+            if (teclas['ArrowDown']) jogador.y += jogador.velocidade;
+            if (teclas['ArrowLeft']) jogador.x -= jogador.velocidade;
+            if (teclas['ArrowRight']) jogador.x += jogador.velocidade;
+            verificarColisao();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            desenharJogador();
+            desenharMeta(metas[faseAtual % metas.length]);
+            desenharObstaculos();
+            requestAnimationFrame(atualizarJogo);
+        }
+
+        atualizarJogo();
+    </script>
+</body>
+</html>

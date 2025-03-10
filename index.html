@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Gamer</title>
+
+    <!-- Link para os ícones do Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('gamer.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        nav {
+            width: 100%;
+            background-color: blue;
+            padding: 10px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            margin: 0 20px;
+            display: flex;
+            align-items: center;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        nav ul li a i {
+            margin-right: 8px; /* Espaço entre o ícone e o texto */
+        }
+        nav ul li a:hover {
+            color: #00ff00;
+        }
+        h1 {
+            color: #00ff00;
+            font-size: 24px;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <h1>GamerZone</h1>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i>Home</a></li>
+                <li><a href="fase0.html"><i class="fas fa-clone"></i>Cartas</a></li>
+                <li><a href="fase1.html"><i class="fas fa-clone"></i>Cartas2</a></li>
+                <li><a href="Cartas3"><i class="fas fa-clone"></i>Cartas3</a></li>
+                <li><a href="pensamentoC1.html"><i class="fas fa-brain"></i>Pensamento_Comp1</a></li>
+                <li><a href="pensamentoC2.html"><i class="fas fa-brain"></i>Pensamento_Comp2</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.backgroundColor = '#333';
+            } else {
+                nav.style.backgroundColor = '#1f1f1f';
+            }
+        });
+    </script>
+</body>
+</html>
